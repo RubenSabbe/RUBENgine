@@ -1,0 +1,13 @@
+RUBENgine/Debug/
+TestApp/
+Debug/
+.vs/
+*.pdb
+*.idb
+*.tlog
+*.obj
+*.exe
+*.txt
+*.ilk
+*.log
+*.zip

@@ -60,7 +60,7 @@ namespace RUBENgine
         POINT m_CurrentMousePosition, m_OldMousePosition, m_MouseMovement;
         bool m_IsInitialized, m_ForceToCenter;
 
-        bool UpdateKeyBoardStates();
+        void UpdateKeyBoardStates();
 	};
 }
 

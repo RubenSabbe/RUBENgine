@@ -148,10 +148,9 @@ bool RUBENgine::InputManager::IsKeyDown(const int key, const bool isOldState)
 	return false;
 }
 
-bool RUBENgine::InputManager::UpdateKeyBoardStates()
+void RUBENgine::InputManager::UpdateKeyBoardStates()
 {
-	BOOL getKeyboardResult;
-	getKeyboardResult = GetKeyboardState(m_pKeyBoardStateBuffers[((int)m_IsKeyBoardBufferZeroActive + 1) % 2]);
+	for (int x = 0; x < 256; x++)
+		m_pKeyBoardStateBuffers[((int)m_IsKeyBoardBufferZeroActive + 1) % 2][x] = (char)(GetAsyncKeyState(x) >> 8);
 	m_IsKeyBoardBufferZeroActive = !m_IsKeyBoardBufferZeroActive;
-	return getKeyboardResult > 0;
 }

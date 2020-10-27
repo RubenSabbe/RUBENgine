@@ -30,7 +30,6 @@ void RUBENgine::Application::Initialize(const char* windowTitle, const int windo
 	//Renderer::GetInstance()->Init(m_pWindow, { 0, 0, 0, 255 });
 	//Logger::Init();
 	InputManager::GetInstance()->Init();
-	InputManager::GetInstance()->AddInputAction(RUBENgine::InputAction(VK_ESCAPE, ButtonState::Pressed), 1);
 	//ResourceManager::GetInstance()->Init(dataPath + "Images/");
 	//SoundManager::GetInstance()->Init(dataPath + "Sound/");
 	//PhysicsManager::GetInstance()->Init({ 0.0f, -9.81f }, 8, 3, ppm, { 0, 255, 0, 255 });
@@ -65,12 +64,12 @@ void RUBENgine::Application::Run()
 		while (lag >= m_SecPerFrame)
 		{
 			InputManager::GetInstance()->Update();
+			if (InputManager::GetInstance()->IsKeyDown(VK_ESCAPE))
+				doContinue = false;
 			SceneManager::GetInstance()->FixedUpdate(m_SecPerFrame);
 			lag -= m_SecPerFrame;
 		}
 		SceneManager::GetInstance()->Render();
-		if (InputManager::GetInstance()->IsActionHit(1))
-			doContinue = false;
 	}
 	
 	Cleanup();

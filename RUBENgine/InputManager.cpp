@@ -1,4 +1,5 @@
 #include "InputManager.h"
+#include "Window.h"
 
 RUBENgine::InputManager::InputManager() :
 	m_InputActions{},
@@ -63,16 +64,11 @@ void RUBENgine::InputManager::Update()
 			currAction->IsTriggered = true;
 	}
 
-	//TODO: Replace with actual values once window exists
-	int GETWINDOWWIDTH = 0;
-	int GETWINDOWHEIGHT = 0;
-	HWND GETWINDOWHANDLE = 0;
-
 	//Mouse Position
 	m_OldMousePosition = m_CurrentMousePosition;
 	if (GetCursorPos(&m_CurrentMousePosition))
 	{
-		ScreenToClient(GETWINDOWHANDLE, &m_CurrentMousePosition);
+		ScreenToClient(Window::GetInstance()->GetWindowHandle(), &m_CurrentMousePosition);
 	}
 
 	m_MouseMovement.x = m_CurrentMousePosition.x - m_OldMousePosition.x;
@@ -81,11 +77,11 @@ void RUBENgine::InputManager::Update()
 	if (m_ForceToCenter)
 	{
 		POINT mouseCenter;
-		m_CurrentMousePosition.x = GETWINDOWWIDTH / 2;
-		m_CurrentMousePosition.y = GETWINDOWHEIGHT / 2;
+		m_CurrentMousePosition.x = Window::GetInstance()->GetWindowWidth() / 2;
+		m_CurrentMousePosition.y = Window::GetInstance()->GetWindowHeight() / 2;
 		mouseCenter.x = m_CurrentMousePosition.x;
 		mouseCenter.y = m_CurrentMousePosition.y;
-		ClientToScreen(GETWINDOWHANDLE, &mouseCenter);
+		ClientToScreen(Window::GetInstance()->GetWindowHandle(), &mouseCenter);
 
 		SetCursorPos(mouseCenter.x, mouseCenter.y);
 	}
@@ -111,21 +107,16 @@ bool RUBENgine::InputManager::IsActionHit(const int actionID) const
 
 void RUBENgine::InputManager::SetForceMouseToCenter(const bool forceMouseToCenter)
 {
-	//TODO: Replace with actual values once window exists
-	int GETWINDOWWIDTH = 0;
-	int GETWINDOWHEIGHT = 0;
-	HWND GETWINDOWHANDLE = 0;
-
 	m_ForceToCenter = forceMouseToCenter;
 
 	if (forceMouseToCenter)
 	{
 		POINT mouseCenter;
-		m_CurrentMousePosition.x = GETWINDOWWIDTH / 2;
-		m_CurrentMousePosition.y = GETWINDOWHEIGHT / 2;
+		m_CurrentMousePosition.x = Window::GetInstance()->GetWindowWidth() / 2;
+		m_CurrentMousePosition.y = Window::GetInstance()->GetWindowHeight() / 2;
 		mouseCenter.x = m_CurrentMousePosition.x;
 		mouseCenter.y = m_CurrentMousePosition.y;
-		ClientToScreen(GETWINDOWHANDLE, &mouseCenter);
+		ClientToScreen(Window::GetInstance()->GetWindowHandle(), &mouseCenter);
 
 		SetCursorPos(mouseCenter.x, mouseCenter.y);
 	}

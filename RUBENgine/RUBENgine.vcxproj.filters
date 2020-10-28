@@ -31,6 +31,9 @@
     <ClInclude Include="Window.h">
       <Filter>Core</Filter>
     </ClInclude>
+    <ClInclude Include="Logger.h">
+      <Filter>Helpers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="RUBENginePCH.cpp">
@@ -53,6 +56,9 @@
     </ClCompile>
     <ClCompile Include="Window.cpp">
       <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Logger.cpp">
+      <Filter>Helpers</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

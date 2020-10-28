@@ -2,6 +2,7 @@
 #include "SceneManager.h"
 #include "InputManager.h"
 #include "Window.h"
+#include "Logger.h"
 
 const float RUBENgine::Application::m_SecPerFrame = 0.016f;
 
@@ -10,27 +11,9 @@ void RUBENgine::Application::Initialize(HINSTANCE hInstance, const LPCWSTR& wind
 	UNREFERENCED_PARAMETER(windowTitle);
 	UNREFERENCED_PARAMETER(windowWidth);
 	UNREFERENCED_PARAMETER(windowHeight);
-	Window::GetInstance()->Initialize(m_HWnd, hInstance, windowTitle, windowWidth, windowHeight);
-	//if (SDL_Init(SDL_INIT_VIDEO) != 0)
-	//{
-	//	throw std::runtime_error(std::string("SDL_Init Error: ") + SDL_GetError());
-	//}
-	//
-	//m_pWindow = SDL_CreateWindow(
-	//	windowTitle,
-	//	SDL_WINDOWPOS_UNDEFINED,
-	//	SDL_WINDOWPOS_UNDEFINED,
-	//	windowWidth,
-	//	windowHeight,
-	//	SDL_WINDOW_OPENGL
-	//);
-	//if (m_pWindow == nullptr)
-	//{
-	//	throw std::runtime_error(std::string("SDL_CreateWindow Error: ") + SDL_GetError());
-	//}
-	//Renderer::GetInstance()->Init(m_pWindow, { 0, 0, 0, 255 });
-	//Logger::Init();
+	Window::GetInstance()->Initialize(hInstance, windowTitle, windowWidth, windowHeight);
 	InputManager::GetInstance()->Init();
+	//Renderer::GetInstance()->Init(m_pWindow, { 0, 0, 0, 255 });
 	//ResourceManager::GetInstance()->Init(dataPath + "Images/");
 	//SoundManager::GetInstance()->Init(dataPath + "Sound/");
 	//PhysicsManager::GetInstance()->Init({ 0.0f, -9.81f }, 8, 3, ppm, { 0, 255, 0, 255 });
@@ -44,11 +27,11 @@ void RUBENgine::Application::Cleanup()
 	SceneManager::Release();
 	InputManager::Release();
 	Window::Release();
+	Logger::Release();
 	//ResourceManager::Release();
 	//SoundManager::Release();
 	//PhysicsManager::Release();
 	//m_pWindow = nullptr;
-	//SDL_Quit();
 }
 
 void RUBENgine::Application::Run()

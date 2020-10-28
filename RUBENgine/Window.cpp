@@ -22,7 +22,7 @@ RUBENgine::Window::~Window()
 {
 }
 
-void RUBENgine::Window::Initialize(HWND& hWnd, HINSTANCE hInstance, const LPCWSTR& windowName, const int windowWidth, const int windowHeight)
+void RUBENgine::Window::Initialize(HINSTANCE hInstance, const LPCWSTR& windowName, const int windowWidth, const int windowHeight)
 {
     const_cast<LPCWSTR&>(m_WindowName) = windowName;
     const_cast<int&>(m_WindowWidth) = windowWidth;
@@ -50,7 +50,7 @@ void RUBENgine::Window::Initialize(HWND& hWnd, HINSTANCE hInstance, const LPCWST
         return;
     }
 
-    hWnd = CreateWindowEx(NULL,
+    m_WindowHandle = CreateWindowEx(NULL,
         windowName,
         windowName,
         WS_OVERLAPPEDWINDOW,
@@ -61,13 +61,13 @@ void RUBENgine::Window::Initialize(HWND& hWnd, HINSTANCE hInstance, const LPCWST
         hInstance,
         NULL);
 
-    if (!hWnd)
+    if (!m_WindowHandle)
     {
         MessageBox(NULL, L"Error creating window",
             L"Error", MB_OK | MB_ICONERROR);
         return;
     }
 
-    ShowWindow(hWnd, true);
-    UpdateWindow(hWnd);
+    ShowWindow(m_WindowHandle, true);
+    UpdateWindow(m_WindowHandle);
 }

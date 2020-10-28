@@ -4,9 +4,11 @@
 #include <iostream>
 #include "Application.h"
 
-int main()
+int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPWSTR, _In_ int)
 {
     RUBENgine::Application temp;
-    temp.Initialize("Test", 1080, 720);
+    temp.Initialize(hInstance, L"Test", 1080, 720);
     temp.Run();
+
+    return 0;
 }

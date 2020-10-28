@@ -1,15 +1,16 @@
-#include "RUBENginePCH.h"
 #include "Application.h"
 #include "SceneManager.h"
 #include "InputManager.h"
+#include "Window.h"
 
 const float RUBENgine::Application::m_SecPerFrame = 0.016f;
 
-void RUBENgine::Application::Initialize(const char* windowTitle, const int windowWidth, const int windowHeight)
+void RUBENgine::Application::Initialize(HINSTANCE hInstance, const LPCWSTR& windowTitle, const int windowWidth, const int windowHeight)
 {
 	UNREFERENCED_PARAMETER(windowTitle);
 	UNREFERENCED_PARAMETER(windowWidth);
 	UNREFERENCED_PARAMETER(windowHeight);
+	Window::GetInstance()->Initialize(m_HWnd, hInstance, windowTitle, windowWidth, windowHeight);
 	//if (SDL_Init(SDL_INIT_VIDEO) != 0)
 	//{
 	//	throw std::runtime_error(std::string("SDL_Init Error: ") + SDL_GetError());
@@ -42,6 +43,7 @@ void RUBENgine::Application::Cleanup()
 	//Renderer::Release();
 	SceneManager::Release();
 	InputManager::Release();
+	Window::Release();
 	//ResourceManager::Release();
 	//SoundManager::Release();
 	//PhysicsManager::Release();

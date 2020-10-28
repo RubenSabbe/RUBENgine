@@ -28,6 +28,9 @@
     <ClInclude Include="InputManager.h">
       <Filter>Managers</Filter>
     </ClInclude>
+    <ClInclude Include="Window.h">
+      <Filter>Core</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="RUBENginePCH.cpp">
@@ -47,6 +50,9 @@
     </ClCompile>
     <ClCompile Include="InputManager.cpp">
       <Filter>Managers</Filter>
+    </ClCompile>
+    <ClCompile Include="Window.cpp">
+      <Filter>Core</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -7,17 +7,22 @@ RUBENgine::Logger::~Logger() {}
 
 void RUBENgine::Logger::LogInfo(const std::wstring& text, bool includeTimeStamp)
 {
-	OutputDebugStringW(((includeTimeStamp ? GetTimeStamp() : L"") + L"[INFO]: " + text + L"\n").c_str());
+	Log(text, L"INFO", includeTimeStamp);
 }
 
 void RUBENgine::Logger::LogWarning(const std::wstring& text, bool includeTimeStamp)
 {
-	OutputDebugStringW(((includeTimeStamp ? GetTimeStamp() : L"") + L"[WARNING]: " + text + L"\n").c_str());
+	Log(text, L"WARNING", includeTimeStamp);
 }
 
 void RUBENgine::Logger::LogError(const std::wstring& text, bool includeTimeStamp)
 {
-	OutputDebugStringW(((includeTimeStamp ? GetTimeStamp() : L"") + L"[ERROR]: " + text + L"\n").c_str());
+	Log(text, L"ERROR", includeTimeStamp);
+}
+
+void RUBENgine::Logger::Log(const std::wstring& text, const std::wstring& label, bool includeTimeStamp)
+{
+	OutputDebugStringW(((includeTimeStamp ? GetTimeStamp() : L"") + L"[" + label + L"]: " + text + L"\n").c_str());
 }
 
 std::wstring RUBENgine::Logger::GetTimeStamp()

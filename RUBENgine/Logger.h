@@ -12,9 +12,9 @@ namespace RUBENgine
 		void LogInfo(const std::wstring& text, bool includeTimeStamp = false);
 		void LogWarning(const std::wstring& text, bool includeTimeStamp = false);
 		void LogError(const std::wstring& text, bool includeTimeStamp = false);
+		void Log(const std::wstring& text, const std::wstring& label, bool includeTimeStamp = false);
 
 	private:
 		std::wstring GetTimeStamp();
 	};
 }
-

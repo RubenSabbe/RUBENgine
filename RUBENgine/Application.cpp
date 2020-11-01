@@ -6,9 +6,10 @@
 
 const float RUBENgine::Application::m_SecPerFrame = 0.016f;
 
-void RUBENgine::Application::Initialize(HINSTANCE hInstance, const LPCWSTR& windowTitle, const int windowWidth, const int windowHeight, bool useWarp)
+void RUBENgine::Application::Initialize(HINSTANCE hInstance, const LPCWSTR& windowTitle, const int windowWidth, const int windowHeight, const bool useWarp)
 {
 	m_UseWarp = useWarp;
+	EnableDebugLayer();
 	GameContext::GetInstance()->pDevice = GetDevice();
 	//Command Queue Uses the Device so DO NOT swap order
 	GameContext::GetInstance()->pCommandQueue = GetCommandQueue();
@@ -21,6 +22,7 @@ void RUBENgine::Application::Cleanup()
 {
 	SceneManager::Release();
 	InputManager::Release();
+	GameContext::Release();
 	Logger::Release();
 }
 
@@ -45,6 +47,7 @@ void RUBENgine::Application::Run()
 			lag -= m_SecPerFrame;
 		}
 		SceneManager::GetInstance()->Render();
+		GameContext::GetInstance()->pWindow->Render();
 	}
 	
 	Cleanup();
@@ -149,4 +152,16 @@ Microsoft::WRL::ComPtr<ID3D12CommandQueue> RUBENgine::Application::GetCommandQue
 	ThrowIfFailed(GameContext::GetInstance()->pDevice->CreateCommandQueue(&desc, IID_PPV_ARGS(&d3d12CommandQueue)));
 
 	return d3d12CommandQueue;
+}
+
+void RUBENgine::Application::EnableDebugLayer()
+{
+#if defined(_DEBUG)
+	// Always enable the debug layer before doing anything DX12 related
+	// so all possible errors generated while creating DX12 objects
+	// are caught by the debug layer.
+	Microsoft::WRL::ComPtr<ID3D12Debug> debugInterface;
+	ThrowIfFailed(D3D12GetDebugInterface(IID_PPV_ARGS(&debugInterface)));
+	debugInterface->EnableDebugLayer();
+#endif
 }

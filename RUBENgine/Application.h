@@ -7,7 +7,7 @@ namespace RUBENgine
 	class Application
 	{
 	public:
-		void Initialize(HINSTANCE hInstance, const LPCWSTR& windowTitle, const int windowWidth, const int windowHeight, bool useWarp = false);
+		void Initialize(HINSTANCE hInstance, const LPCWSTR& windowTitle, const int windowWidth, const int windowHeight, const bool useWarp = false);
 		void Cleanup();
 		void Run();
 
@@ -18,5 +18,6 @@ namespace RUBENgine
 		Microsoft::WRL::ComPtr<IDXGIAdapter4> GetAdapter();
 		Microsoft::WRL::ComPtr<ID3D12Device2> GetDevice();
 		Microsoft::WRL::ComPtr<ID3D12CommandQueue> GetCommandQueue();
+		void EnableDebugLayer();
 	};
 }

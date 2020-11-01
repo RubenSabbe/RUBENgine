@@ -6,7 +6,10 @@ RUBENgine::Window::Window(HINSTANCE hInstance, const LPCWSTR& windowName, const 
     m_WindowWidth{ windowWidth },
     m_WindowHeight{ windowHeight },
     m_WindowHandle{ nullptr },
-    m_RTVDescriptorSize{ 0 }
+    m_RTVDescriptorSize{ 0 },
+    m_FenceEvent{ nullptr },
+    m_FenceValue{ 0 },
+    m_IsTearingSupported{ CheckTearingSupport() }
 {
     WNDCLASSEX wc;
 
@@ -48,9 +51,6 @@ RUBENgine::Window::Window(HINSTANCE hInstance, const LPCWSTR& windowName, const 
         return;
     }
 
-    ShowWindow(m_WindowHandle, true);
-    UpdateWindow(m_WindowHandle);
-
     CreateSwapChain();
     CreateDescriptorHeap();
     m_RTVDescriptorSize = GameContext::GetInstance()->pDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
@@ -59,6 +59,66 @@ RUBENgine::Window::Window(HINSTANCE hInstance, const LPCWSTR& windowName, const 
 
     CreateCommandAllocator();
     CreateCommandList();
+
+    CreateFence();
+    CreateEventHandle();
+
+    ShowWindow(m_WindowHandle, true);
+    UpdateWindow(m_WindowHandle);
+}
+
+RUBENgine::Window::~Window()
+{
+    Flush();
+    CloseHandle(m_FenceEvent);
+}
+
+void RUBENgine::Window::Render()
+{
+    UINT currBackBufferIndex = m_SwapChain->GetCurrentBackBufferIndex();
+    Microsoft::WRL::ComPtr<ID3D12CommandAllocator> commandAllocator = m_CommandAllocators[currBackBufferIndex];
+    Microsoft::WRL::ComPtr<ID3D12Resource> backBuffer = m_BackBuffers[currBackBufferIndex];
+
+    commandAllocator->Reset();
+    m_CommandList->Reset(commandAllocator.Get(), nullptr);
+    // Clear the render target.
+    {
+        CD3DX12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(
+            backBuffer.Get(),
+            D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
+
+        m_CommandList->ResourceBarrier(1, &barrier);
+
+        FLOAT clearColor[] = { 0.4f, 0.6f, 0.9f, 1.0f };
+        CD3DX12_CPU_DESCRIPTOR_HANDLE rtv(m_RTVDescriptorHeap->GetCPUDescriptorHandleForHeapStart(),
+            currBackBufferIndex, m_RTVDescriptorSize);
+
+        m_CommandList->ClearRenderTargetView(rtv, clearColor, 0, nullptr);
+    }
+
+    // Present
+    {
+        CD3DX12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(
+            backBuffer.Get(),
+            D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
+        m_CommandList->ResourceBarrier(1, &barrier);
+
+        ThrowIfFailed(m_CommandList->Close());
+
+        ID3D12CommandList* const commandLists[] = {
+            m_CommandList.Get()
+        };
+        GameContext::GetInstance()->pCommandQueue->ExecuteCommandLists(_countof(commandLists), commandLists);
+
+        UINT syncInterval = m_IsVSync ? 1 : 0;
+        UINT presentFlags = m_IsTearingSupported && !m_IsVSync ? DXGI_PRESENT_ALLOW_TEARING : 0;
+        ThrowIfFailed(m_SwapChain->Present(syncInterval, presentFlags));
+
+        m_FrameFenceValues[currBackBufferIndex] = Signal();
+        currBackBufferIndex = m_SwapChain->GetCurrentBackBufferIndex();
+
+        WaitForFenceValue(m_FrameFenceValues[currBackBufferIndex]);
+    }
 }
 
 LRESULT RUBENgine::Window::WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
@@ -68,8 +128,9 @@ LRESULT RUBENgine::Window::WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARA
     case WM_DESTROY: // x button on top right corner of window was pressed
         PostQuitMessage(0);
         return 0;
+    default:
+        return ::DefWindowProcW(hwnd, message, wParam, lParam);
     }
-    return DefWindowProc(hwnd, message, wParam, lParam);
 }
 
 void RUBENgine::Window::CreateSwapChain()
@@ -95,7 +156,7 @@ void RUBENgine::Window::CreateSwapChain()
     swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
     swapChainDesc.AlphaMode = DXGI_ALPHA_MODE_UNSPECIFIED;
     // It is recommended to always allow tearing if tearing support is available.
-    swapChainDesc.Flags = CheckTearingSupport() ? DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING : 0;
+    swapChainDesc.Flags = m_IsTearingSupported ? DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING : 0;
 
     Microsoft::WRL::ComPtr<IDXGISwapChain1> swapChain1;
     ThrowIfFailed(dxgiFactory4->CreateSwapChainForHwnd(
@@ -185,6 +246,35 @@ void RUBENgine::Window::CreateCommandList()
     ThrowIfFailed(m_CommandList->Close());
 }
 
-RUBENgine::Window::~Window()
+void RUBENgine::Window::CreateFence()
 {
+    ThrowIfFailed(GameContext::GetInstance()->pDevice->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&m_Fence)));
+}
+
+void RUBENgine::Window::CreateEventHandle()
+{
+    m_FenceEvent = ::CreateEvent(NULL, FALSE, FALSE, NULL);
+    assert(m_FenceEvent && "Failed to create fence event.");
+}
+
+uint64_t RUBENgine::Window::Signal()
+{
+    uint64_t fenceValueForSignal = ++m_FenceValue;
+    ThrowIfFailed(GameContext::GetInstance()->pCommandQueue->Signal(m_Fence.Get(), fenceValueForSignal));
+
+    return fenceValueForSignal;
+}
+
+void RUBENgine::Window::Flush()
+{
+    WaitForFenceValue(Signal());
+}
+
+void RUBENgine::Window::WaitForFenceValue(uint64_t fenceValue)
+{
+    if (m_Fence->GetCompletedValue() < fenceValue)
+    {
+        ThrowIfFailed(m_Fence->SetEventOnCompletion(fenceValue, m_FenceEvent));
+        ::WaitForSingleObject(m_FenceEvent, 0xffffffffUL);
+    }
 }

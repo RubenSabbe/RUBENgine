@@ -52,6 +52,7 @@ void RUBENgine::Application::Run()
 
 Microsoft::WRL::ComPtr<IDXGIAdapter4> RUBENgine::Application::GetAdapter()
 {
+	//See also: https://www.3dgep.com/learning-directx-12-1/
 	Microsoft::WRL::ComPtr<IDXGIFactory4> dxgiFactory;
 	UINT createFactoryFlags = 0;
 #if defined(_DEBUG)
@@ -95,6 +96,7 @@ Microsoft::WRL::ComPtr<IDXGIAdapter4> RUBENgine::Application::GetAdapter()
 
 Microsoft::WRL::ComPtr<ID3D12Device2> RUBENgine::Application::GetDevice()
 {
+	//See also: https://www.3dgep.com/learning-directx-12-1/
 	Microsoft::WRL::ComPtr<ID3D12Device2> d3d12Device2;
 	ThrowIfFailed(D3D12CreateDevice(GetAdapter().Get(), D3D_FEATURE_LEVEL_11_0, IID_PPV_ARGS(&d3d12Device2)));
 
@@ -135,6 +137,7 @@ Microsoft::WRL::ComPtr<ID3D12Device2> RUBENgine::Application::GetDevice()
 
 Microsoft::WRL::ComPtr<ID3D12CommandQueue> RUBENgine::Application::GetCommandQueue()
 {
+	//See also: https://www.3dgep.com/learning-directx-12-1/
 	Microsoft::WRL::ComPtr<ID3D12CommandQueue> d3d12CommandQueue;
 
 	D3D12_COMMAND_QUEUE_DESC desc = {};

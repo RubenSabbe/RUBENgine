@@ -74,6 +74,7 @@ LRESULT RUBENgine::Window::WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARA
 
 void RUBENgine::Window::CreateSwapChain()
 {
+    //See also: https://www.3dgep.com/learning-directx-12-1/
     Microsoft::WRL::ComPtr<IDXGIFactory4> dxgiFactory4;
     UINT createFactoryFlags = 0;
 #if defined(_DEBUG)
@@ -114,6 +115,7 @@ void RUBENgine::Window::CreateSwapChain()
 
 bool RUBENgine::Window::CheckTearingSupport()
 {
+    //See also: https://www.3dgep.com/learning-directx-12-1/
     BOOL allowTearing = FALSE;
 
     // Rather than create the DXGI 1.5 factory interface directly, we create the
@@ -140,6 +142,7 @@ bool RUBENgine::Window::CheckTearingSupport()
 
 void RUBENgine::Window::CreateDescriptorHeap()
 {
+    //See also: https://www.3dgep.com/learning-directx-12-1/
     D3D12_DESCRIPTOR_HEAP_DESC desc = {};
     desc.NumDescriptors = m_BufferCount;
     desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
@@ -149,8 +152,7 @@ void RUBENgine::Window::CreateDescriptorHeap()
 
 void RUBENgine::Window::UpdateRenderTargetViews()
 {
-    auto rtvDescriptorSize = GameContext::GetInstance()->pDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
-
+    //See also: https://www.3dgep.com/learning-directx-12-1/
     CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(m_RTVDescriptorHeap->GetCPUDescriptorHandleForHeapStart());
 
     for (int i = 0; i < m_BufferCount; ++i)
@@ -162,12 +164,13 @@ void RUBENgine::Window::UpdateRenderTargetViews()
 
         m_BackBuffers[i] = backBuffer;
 
-        rtvHandle.Offset(rtvDescriptorSize);
+        rtvHandle.Offset(m_RTVDescriptorSize);
     }
 }
 
 void RUBENgine::Window::CreateCommandAllocator()
 {
+    //See also: https://www.3dgep.com/learning-directx-12-1/
     for (int i = 0; i < m_BufferCount; ++i)
     {
         ThrowIfFailed(GameContext::GetInstance()->pDevice->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&m_CommandAllocators[i])));
@@ -176,6 +179,7 @@ void RUBENgine::Window::CreateCommandAllocator()
 
 void RUBENgine::Window::CreateCommandList()
 {
+    //See also: https://www.3dgep.com/learning-directx-12-1/
     ThrowIfFailed(GameContext::GetInstance()->pDevice->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, m_CommandAllocators[m_SwapChain->GetCurrentBackBufferIndex()].Get(), nullptr, IID_PPV_ARGS(&m_CommandList)));
 
     ThrowIfFailed(m_CommandList->Close());

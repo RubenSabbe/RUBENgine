@@ -37,6 +37,9 @@
     <ClInclude Include="GameContext.h">
       <Filter>Helpers</Filter>
     </ClInclude>
+    <ClInclude Include="ModelComponent.h">
+      <Filter>Components</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="RUBENginePCH.cpp">
@@ -62,6 +65,9 @@
     </ClCompile>
     <ClCompile Include="Logger.cpp">
       <Filter>Helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="ModelComponent.cpp">
+      <Filter>Components</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

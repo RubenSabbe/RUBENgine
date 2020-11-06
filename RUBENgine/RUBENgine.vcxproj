@@ -158,6 +158,7 @@
     <ClInclude Include="Application.h" />
     <ClInclude Include="InputManager.h" />
     <ClInclude Include="Logger.h" />
+    <ClInclude Include="ModelComponent.h" />
     <ClInclude Include="RUBENginePCH.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="SceneManager.h" />
@@ -169,6 +170,7 @@
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="InputManager.cpp" />
     <ClCompile Include="Logger.cpp" />
+    <ClCompile Include="ModelComponent.cpp" />
     <ClCompile Include="RUBENginePCH.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="SceneManager.cpp" />

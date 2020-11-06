@@ -17,7 +17,7 @@ namespace RUBENgine
 
     struct InputAction
     {
-        InputAction(const std::vector<int>& keyCodes, const ButtonState triggerState = ButtonState::Down) : 
+        InputAction(const std::vector<int>& keyCodes = {}, const ButtonState triggerState = ButtonState::Down) :
             TriggerState(triggerState),
             KeyCodes(keyCodes),
             IsTriggered(false)

@@ -10,26 +10,27 @@ namespace RUBENgine
     enum class ButtonState
     {
         //DO NOT CHANGE ORDER OR InputManager::Update WILL NO LONGER WORK!!
-        Released = 0,
+        Down = 0,
         Pressed = 1,
-        Down = 2
+        Released = 2
     };
 
     struct InputAction
     {
-        InputAction(int keyCode = -1, ButtonState triggerState = ButtonState::Down) : 
+        InputAction(const std::vector<int>& keyCodes, const ButtonState triggerState = ButtonState::Down) : 
             TriggerState(triggerState),
-            KeyCode(keyCode),
+            KeyCodes(keyCodes),
             IsTriggered(false)
         {
         }
 
         ButtonState TriggerState;
-        int KeyCode;
+        std::vector<int> KeyCodes;
         bool IsTriggered;
     };
 #pragma endregion
 
+    //Checking for all buttons seperately is always slightly faster but for convenience of linking buttons the InputAction exists
 	class InputManager final : public Singleton<InputManager>
 	{
     public:
@@ -51,6 +52,9 @@ namespace RUBENgine
 
         void SetCursorVisible(const bool isVisible) { ShowCursor(isVisible); }
         bool IsKeyDown(const int key, const bool isOldState = false);
+        bool IsKeyPressed(const int key);
+        bool IsKeyReleased(const int key);
+        bool IsKeyState(const int key, const ButtonState state);
 
     private:
         std::map<int, InputAction> m_InputActions;

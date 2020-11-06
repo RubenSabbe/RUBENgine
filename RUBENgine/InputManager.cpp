@@ -58,10 +58,16 @@ void RUBENgine::InputManager::Update()
 		//Reset the previous state before updating/checking the new state
 		currAction->IsTriggered = false;
 
-		//First check/previous frame: will return false if currAction->TriggerState == Pressed||1
-		//Second check/current frame: will return false if currAction->TriggerState == Released||0
-		if (bool(int(currAction->TriggerState) % 2) != IsKeyDown(currAction->KeyCode, true) && bool(currAction->TriggerState) == IsKeyDown(currAction->KeyCode))
-			currAction->IsTriggered = true;
+		for (int keyCode : currAction->KeyCodes)
+		{
+			//First check/previous frame: will return false if currAction->TriggerState == Pressed||1
+			//Second check/current frame: will return false if currAction->TriggerState == Released||2
+			if ((int(currAction->TriggerState) & 1) != IsKeyDown(keyCode, true) && bool(int(currAction->TriggerState) & 2) != IsKeyDown(keyCode))
+			{
+				currAction->IsTriggered = true;
+				continue;
+			}
+		}
 	}
 
 	//Mouse Position
@@ -137,6 +143,21 @@ bool RUBENgine::InputManager::IsKeyDown(const int key, const bool isOldState)
 	}
 
 	return false;
+}
+
+bool RUBENgine::InputManager::IsKeyPressed(const int key)
+{
+	return (!IsKeyDown(key, true) && IsKeyDown(key));
+}
+
+bool RUBENgine::InputManager::IsKeyReleased(const int key)
+{
+	return (IsKeyDown(key, true) && !IsKeyDown(key));
+}
+
+bool RUBENgine::InputManager::IsKeyState(const int key, const ButtonState state)
+{
+	return ((int(state) & 1) != IsKeyDown(key, true) && bool(int(state) & 2) != IsKeyDown(key));
 }
 
 void RUBENgine::InputManager::UpdateKeyBoardStates()

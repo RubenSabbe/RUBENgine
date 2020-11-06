@@ -16,6 +16,7 @@ void RUBENgine::Application::Initialize(HINSTANCE hInstance, const LPCWSTR& wind
 	//Window Uses the Command Queue so DO NOT swap order
 	GameContext::GetInstance()->pWindow = new Window(hInstance, windowTitle, windowWidth, windowHeight);
 	InputManager::GetInstance()->Init();
+	InputManager::GetInstance()->AddInputAction(InputAction({ 'A' }, ButtonState::Released), 1);
 }
 
 void RUBENgine::Application::Cleanup()
@@ -43,6 +44,8 @@ void RUBENgine::Application::Run()
 			InputManager::GetInstance()->Update();
 			if (InputManager::GetInstance()->IsKeyDown(VK_ESCAPE))
 				doContinue = false;
+			if (InputManager::GetInstance()->IsActionHit(1))
+				Logger::GetInstance()->LogInfo(L"Test");
 			SceneManager::GetInstance()->FixedUpdate(m_SecPerFrame);
 			lag -= m_SecPerFrame;
 		}
